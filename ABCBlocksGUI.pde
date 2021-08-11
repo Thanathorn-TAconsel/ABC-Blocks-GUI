@@ -32,7 +32,6 @@ void draw() {
             oldy = mouseY;
             location = mapMouseLocationtoBlock(mouseX,mouseY);
         }
-
         if (!mousePressed && animationrunning) {
             if (animationstate == 0) {
                 if (point == 'U') {
