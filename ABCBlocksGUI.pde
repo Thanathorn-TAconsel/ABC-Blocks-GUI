@@ -2,21 +2,12 @@ char Boardarray[][] = { {'A','B','C','D'},{'E','F','G','H'},{'I','J',' ','K'}};
 char BoardarrayWin[][] = { {'A','B','C','D'},{'E','F','G','H'},{'I','J','K',' '}};
 int moveCount = 0;
 void setup() {
-    /*
-    fill(0);
-    textSize(32);
-    text("LNZ", 0, 40); // Large
-    */
-
     //randommap();
     frameRate(60);
     size(400,300);
-    textSize(32);
-    
+    textSize(32);    
     fill(120);
     rect(300, 200, 100, 100);
-    smooth();
-
 }   
 int oldx,oldy;
 float deltax,deltay;
@@ -24,51 +15,49 @@ int location[];
 int nextX = -1,nextY = -1,x,y;
 int animationstate = 0;
 boolean animationrunning = false;
+boolean iswin = false;
 char point;
 void draw() {
-    if (mousePressed || animationrunning) {
-
-        if (oldx == -1 && oldy == -1) {
+    if ( (mousePressed || animationrunning) && !iswin) {
+        moveBlock();
+    } else {
+        if (oldx != -1 && oldy != -1) {
+            oldx = -1;
+            oldy = -1;
+            if ( (abs(deltax) >= 50 || abs(deltay) >= 50) && (nextX != -1) ) {
+                Boardarray[nextY][nextX] = Boardarray[y][x];
+                Boardarray[y][x] = ' ';
+            }
+            nextX = -1;
+            for (int y = 0;y < 3;y++) {
+                    for (int x = 0;x < 4;x++) {
+                        fill(255);
+                        rect(x*100, y*100, 100, 100);
+                        fill(60);
+                        text(Boardarray[y][x], (x*100)+40, (y*100)+60);
+                    }
+                }
+            if (checkwin()) {
+                
+                fill(255,255,255,200);
+                rect(0, 0, 400, 300);
+                fill(0);
+                text("YOU WIN", 130, 150);
+                iswin = true;
+            } else {
+               
+            }
+        }
+    }
+}
+void moveBlock() {
+    if (oldx == -1 && oldy == -1) {
             oldx = mouseX;
             oldy = mouseY;
             location = mapMouseLocationtoBlock(mouseX,mouseY);
         }
         if (!mousePressed && animationrunning) {
-            if (animationstate == 0) {
-                if (point == 'U') {
-                    deltay-=(100-abs(deltay))/5.0;
-                }
-                if (point == 'D') {
-                    deltay+=(100-abs(deltay))/5.0;
-                }
-                if (point == 'L') {
-                    deltax-=(100-abs(deltax))/5.0;
-                }
-                if (point == 'R') {
-                    deltax+=(100-abs(deltax))/5.0;
-                }
-                if (abs(deltax) >= 97 || abs(deltay) >= 97)  {
-                    animationrunning = false;
-                    
-                }
-            } else {
-                if (point == 'U') {
-                    deltay+=(abs(deltay))/5.0;
-                }
-                if (point == 'D') {
-                    deltay-=(abs(deltay))/5.0;
-                }
-                if (point == 'L') {
-                    deltax+=(abs(deltax))/5.0;
-                }
-                if (point == 'R') {
-                    deltax-=(abs(deltax))/5.0;
-                }
-                if (abs(deltax) <= 3 && abs(deltay) <= 3)  {
-                    animationrunning = false;
-                }
-            }
-            
+            rendermovingBlock();
         } else {
             deltax = mouseX - oldx;
             deltay = mouseY - oldy;
@@ -83,8 +72,7 @@ void draw() {
         x = location[0];
         y = location[1];        
         
-        point = CheckAvilableMove(x,y); 
-        //surface.setTitle(point + " " + x + "," + y);
+        point = CheckAvilableMove(x,y);
         fill(255);
         if (point != '0') {
 
@@ -123,51 +111,52 @@ void draw() {
             rect( moveX, moveY, 100, 100);
             fill(60);
             text(Boardarray[y][x], (moveX)+40, (moveY)+60);
-            //surface.setTitle(moveX + "," + moveY);
         } else {
             animationrunning = false;
-            fill(255,120,120);
-            rect( x*100, y*100, 100, 100);
-            fill(0,0,0);
-            text(Boardarray[y][x], (x*100)+40, (y*100)+60);
+            renderBlock(x,y);
+        }
+}
+void rendermovingBlock() {
+    if (animationstate == 0) {
+        if (point == 'U') {
+            deltay-=(100-abs(deltay))/5.0;
+        }
+        if (point == 'D') {
+            deltay+=(100-abs(deltay))/5.0;
+        }
+        if (point == 'L') {
+            deltax-=(100-abs(deltax))/5.0;
+        }
+        if (point == 'R') {
+            deltax+=(100-abs(deltax))/5.0;
+        }
+        if (abs(deltax) >= 97 || abs(deltay) >= 97)  {
+            animationrunning = false;
+            
         }
     } else {
-        surface.setTitle("Stoped");
-        if (oldx != -1 && oldy != -1) {
-            oldx = -1;
-            oldy = -1;
-            if ( (abs(deltax) >= 50 || abs(deltay) >= 50) && (nextX != -1) ) {
-                Boardarray[nextY][nextX] = Boardarray[y][x];
-                Boardarray[y][x] = ' ';
-            }
-            nextX = -1;
-            for (int y = 0;y < 3;y++) {
-                    for (int x = 0;x < 4;x++) {
-                        fill(255);
-                        rect(x*100, y*100, 100, 100);
-                        fill(60);
-                        text(Boardarray[y][x], (x*100)+40, (y*100)+60);
-                    }
-                }
-            if (checkwin()) {
-                
-                fill(255,255,255,200);
-                rect(0, 0, 400, 300);
-                fill(0);
-                text("YOU WIN", 130, 150);
-            } else {
-               
-            }
+        if (point == 'U') {
+            deltay+=(abs(deltay))/5.0;
+        }
+        if (point == 'D') {
+            deltay-=(abs(deltay))/5.0;
+        }
+        if (point == 'L') {
+            deltax+=(abs(deltax))/5.0;
+        }
+        if (point == 'R') {
+            deltax-=(abs(deltax))/5.0;
+        }
+        if (abs(deltax) <= 3 && abs(deltay) <= 3)  {
+            animationrunning = false;
         }
     }
-    
-    /*
-    background(0, 0, 0, 0);
-    int[] loc = mapMouseLocationtoBlock(mouseX,mouseY);
-    fill(255);
-    textSize(16);
-    text(loc[0] + "," +loc[1], 0, 40);
-    */
+}
+void renderBlock(int x,int y) {
+    fill(255,120,120);
+    rect( x*100, y*100, 100, 100);
+    fill(0,0,0);
+    text(Boardarray[y][x], (x*100)+40, (y*100)+60);
 }
 boolean checkwin() {
     for (int y =0;y < 3;y++) {
@@ -210,39 +199,35 @@ int[] mapMouseLocationtoBlock(int x,int y) {
     int location[] = {0,0};
     location[0] = x / 100;
     location[1] = y / 100;
-    return location; 
-}
-/*
-void randommap(){   
-    ArrayList<char> abc = new ArrayList<char>();
-    abc.add({'A','B','C','D','E','F','G','H','I','J','K'});
-    for (int y = 0;y < 3;y++) {
-        for (int x = 0;x < 4;x++) {
-            
-            Boardarray[y][x]
-        }
-    }
-        /*
-    while (len(Boardarray) > 0){
-        int rand = (int)random(1, len(Boardarray));
-        Boardarray[(int)(moveCount / 4)][moveCount % 4] = Boardarray.pop(rand);
-        moveCount ++;
-    }
+    return location;
     
 }
-*/
-/*
-void renderMovingBlock(){
 
+void randommap(){   
+    char abc[] = {'A','B','C','D','E','F','G','H','I','J','K'};
+
+    for (int y = 0;y < 3;y++) {
+        for (int x = 0;x < 4;x++) {
+            if (abc.length > 0) {
+                int indextoremove = (int)random(abc.length);
+                Boardarray[y][x] = abc[indextoremove];
+                abc = removeArray(abc,indextoremove);
+            }
+        }
+    }
+    Boardarray[2][3] = ' ';
 }
-
-
-*/
-
-/*
-// Get a random element from an array
-String[] words = { "apple", "bear", "cat", "dog" };
-int index = int(random(words.length));  // Same as int(random(4))
-println(words[index]);  // Prints one of the four words
-
-*/
+char[] removeArray(char[] inputarray,int indextoremove) {
+    if (inputarray.length > 0) {
+        char[] outputarray = new char[inputarray.length - 1];
+        int index = 0;
+        for (int i = 0;i < inputarray.length;i++) {
+            if (i != indextoremove) {
+                outputarray[index] = inputarray[i];
+                index++;
+            }
+        }
+        return outputarray;
+    }
+    return new char[0];
+}
