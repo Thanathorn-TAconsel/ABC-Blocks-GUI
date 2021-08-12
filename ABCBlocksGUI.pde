@@ -1,4 +1,5 @@
-char Boardarray[][] = { {'A','B','C','D'},{'E','F',' ','H'},{'I','J','K','G'}};
+char Boardarray[][] = { {'A','B','C','D'},{'E','F','G','H'},{'I','J',' ','K'}};
+char BoardarrayWin[][] = { {'A','B','C','D'},{'E','F','G','H'},{'I','J','K',' '}};
 int moveCount = 0;
 void setup() {
     /*
@@ -7,7 +8,7 @@ void setup() {
     text("LNZ", 0, 40); // Large
     */
 
-    
+    //randommap();
     frameRate(60);
     size(400,300);
     textSize(32);
@@ -141,12 +142,21 @@ void draw() {
             }
             nextX = -1;
             for (int y = 0;y < 3;y++) {
-                for (int x = 0;x < 4;x++) {
-                    fill(255);
+                    for (int x = 0;x < 4;x++) {
+                        fill(255);
                         rect(x*100, y*100, 100, 100);
                         fill(60);
                         text(Boardarray[y][x], (x*100)+40, (y*100)+60);
+                    }
                 }
+            if (checkwin()) {
+                
+                fill(255,255,255,200);
+                rect(0, 0, 400, 300);
+                fill(0);
+                text("YOU WIN", 130, 150);
+            } else {
+               
             }
         }
     }
@@ -158,6 +168,14 @@ void draw() {
     textSize(16);
     text(loc[0] + "," +loc[1], 0, 40);
     */
+}
+boolean checkwin() {
+    for (int y =0;y < 3;y++) {
+        for (int x =0;x < 4;x++) {
+            if (Boardarray[y][x] != BoardarrayWin[y][x])return false;
+        }
+    }
+    return true;
 }
 float limitvalue(float x,int min,int max) {
     if (x > max) {
@@ -193,35 +211,33 @@ int[] mapMouseLocationtoBlock(int x,int y) {
     location[0] = x / 100;
     location[1] = y / 100;
     return location;
-}
-
-void moveBlock(){
     
 }
-
-void renderBlock(){
+/*
+void randommap(){   
+    ArrayList<char> abc = new ArrayList<char>();
+    abc.add({'A','B','C','D','E','F','G','H','I','J','K'});
+    for (int y = 0;y < 3;y++) {
+        for (int x = 0;x < 4;x++) {
+            
+            Boardarray[y][x]
+        }
+    }
+        /*
+    while (len(Boardarray) > 0){
+        int rand = (int)random(1, len(Boardarray));
+        Boardarray[(int)(moveCount / 4)][moveCount % 4] = Boardarray.pop(rand);
+        moveCount ++;
+    }
     
-
 }
+*/
 /*
 void renderMovingBlock(){
 
 }
 
-void randommap()
-{   while (moveCount >= 0){
-        int row = random(0,3);
-        int column = random(0,2);
-        
-    }
 
-    
-    /*while (len(Boardarray) > 0){
-        int rand = int(random(1, len(Boardarray)))
-        Boardarray[moveCount // 4][moveCount % 4] = Boardarray.pop(rand);
-        moveCount ++;
-    }
-}
 */
 
 /*
