@@ -210,8 +210,7 @@ int[] mapMouseLocationtoBlock(int x,int y) {
     int location[] = {0,0};
     location[0] = x / 100;
     location[1] = y / 100;
-    return location;
-    
+    return location; 
 }
 /*
 void randommap(){   
