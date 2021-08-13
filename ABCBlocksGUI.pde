@@ -1,8 +1,7 @@
 char Boardarray[][] = { {'A','B','C','D'},{'E','F','G','H'},{'I','J',' ','K'}};
-char BoardarrayWin[][] = { {'A','B','C','D'},{'E','F','G','H'},{'I','J','K',' '}};
 int moveCount = 0;
 void setup() {
-    //randommap();
+    randommap();
     frameRate(60);
     size(400,300);
     textSize(32);    
@@ -11,13 +10,13 @@ void setup() {
 }   
 int oldx,oldy;
 float deltax,deltay;
-int location[];
 int nextX = -1,nextY = -1,x,y;
 int animationstate = 0;
 boolean animationrunning = false;
 boolean iswin = false;
 char point;
 void draw() {
+
     if ( (mousePressed || animationrunning) && !iswin) {
         moveBlock();
     } else {
@@ -38,23 +37,23 @@ void draw() {
                     }
                 }
             if (checkwin()) {
-                
                 fill(255,255,255,200);
                 rect(0, 0, 400, 300);
                 fill(0);
                 text("YOU WIN", 130, 150);
                 iswin = true;
-            } else {
-               
-            }
+            } 
         }
     }
 }
-void moveBlock() {
+void moveBlock() {   
     if (oldx == -1 && oldy == -1) {
             oldx = mouseX;
             oldy = mouseY;
-            location = mapMouseLocationtoBlock(mouseX,mouseY);
+            int location[] = mapMouseLocationtoBlock(mouseX,mouseY);
+            x = location[0];
+            y = location[1];
+            point = CheckAvilableMove(x,y);
         }
         if (!mousePressed && animationrunning) {
             rendermovingBlock();
@@ -69,10 +68,9 @@ void moveBlock() {
             animationrunning = true;
         }
         textSize(32);
-        x = location[0];
-        y = location[1];        
+             
         
-        point = CheckAvilableMove(x,y);
+        
         fill(255);
         if (point != '0') {
 
@@ -159,6 +157,7 @@ void renderBlock(int x,int y) {
     text(Boardarray[y][x], (x*100)+40, (y*100)+60);
 }
 boolean checkwin() {
+    char BoardarrayWin[][] = { {'A','B','C','D'},{'E','F','G','H'},{'I','J','K',' '}};
     for (int y =0;y < 3;y++) {
         for (int x =0;x < 4;x++) {
             if (Boardarray[y][x] != BoardarrayWin[y][x])return false;
