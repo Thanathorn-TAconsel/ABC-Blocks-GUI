@@ -1,12 +1,18 @@
 char Boardarray[][] = { {'A','B','C','D'},{'E','F','G','H'},{'I','J',' ','K'}};
-int moveCount = 0;
+String gamefilename = "gamesave.txt";
 void setup() {
-    randommap();
+    
+   try {
+       LoadGame(gamefilename);
+   }catch (Exception e) {
+       randommap();
+   }    
     frameRate(60);
     size(400,300);
     textSize(32);    
     fill(120);
     rect(300, 200, 100, 100);
+    
 }   
 int oldx,oldy;
 float deltax,deltay;
@@ -16,7 +22,6 @@ boolean animationrunning = false;
 boolean iswin = false;
 char point;
 void draw() {
-
     if ( (mousePressed || animationrunning) && !iswin) {
         moveBlock();
     } else {
@@ -26,6 +31,7 @@ void draw() {
             if ( (abs(deltax) >= 50 || abs(deltay) >= 50) && (nextX != -1) ) {
                 Boardarray[nextY][nextX] = Boardarray[y][x];
                 Boardarray[y][x] = ' ';
+                SaveGame(gamefilename);
             }
             nextX = -1;
             for (int y = 0;y < 3;y++) {
@@ -41,12 +47,36 @@ void draw() {
                 rect(0, 0, 400, 300);
                 fill(0);
                 text("YOU WIN", 130, 150);
+                randommap();
+                SaveGame(gamefilename);
                 iswin = true;
             } 
         }
     }
 }
-void moveBlock() {   
+void LoadGame(String filename) {
+    byte[] loadtxt = loadBytes(filename);
+    int nextindex = 0;
+    for (int y = 0;y < 3;y++) {
+        for (int x = 0;x < 4;x++) {
+            Boardarray[y][x] = (char)loadtxt[nextindex];
+            nextindex++;
+        }
+    }
+}
+void SaveGame(String filename) {
+    byte[] saveline = new byte[12];
+    int nextindex = 0;
+    for (int y = 0;y < 3;y++) {
+        for (int x = 0;x < 4;x++) {
+            saveline[nextindex] = (byte) Boardarray[y][x];
+            nextindex++;
+        }
+    }
+    saveBytes(filename, saveline);
+}
+void moveBlock() {
+       
     if (oldx == -1 && oldy == -1) {
             oldx = mouseX;
             oldy = mouseY;
