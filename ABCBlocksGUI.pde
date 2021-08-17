@@ -1,5 +1,5 @@
 char Boardarray[][] = { {'A','B','C','D'},{'E','F','G','H'},{'I','J',' ','K'}};
-String gamefilename = "gamesave.txt";
+String gamefilename = "gamesave.csv";
 void setup() {
     
    try {
@@ -55,21 +55,26 @@ void draw() {
     }
 }
 void LoadGame(String filename) {
-    byte[] loadtxt = loadBytes(filename);
+    //byte[] loadtxt = loadBytes(filename);
     int nextindex = 0;
+    String strin[] = loadStrings(filename);
+    String br[] = strin[0].split(",");
     for (int y = 0;y < 3;y++) {
         for (int x = 0;x < 4;x++) {
-            Boardarray[y][x] = (char)loadtxt[nextindex];
+            Boardarray[y][x] = br[nextindex].charAt(0);
             nextindex++;
         }
     }
+    println(br);
 }
 void SaveGame(String filename) {
-    byte[] saveline = new byte[12];
+    byte[] saveline = new byte[24];
     int nextindex = 0;
     for (int y = 0;y < 3;y++) {
         for (int x = 0;x < 4;x++) {
             saveline[nextindex] = (byte) Boardarray[y][x];
+            nextindex++;
+            saveline[nextindex] = (byte) ',';
             nextindex++;
         }
     }
