@@ -1,5 +1,8 @@
-char Boardarray[][] = { {'A','B','C','D'},{'E','F','G','H'},{'I','J',' ','K'}};
-String gamefilename = "gamesave.csv";
+char Boardarray[][] = { {'A','B','C','D'},{'E','F','G','H'},{'I','J','N','K'}};
+String gamefilename = "gamesave.xml";
+String gameversion = "3";
+int PlayTime = 0;
+long MoveCount = 0;
 void setup() {
     
    try {
@@ -7,12 +10,15 @@ void setup() {
    }catch (Exception e) {
        randommap();
    }    
+   
     frameRate(60);
-    size(400,300);
-    textSize(32);    
+    size(400,350);
     fill(120);
     rect(300, 200, 100, 100);
+    textSize(16);    
     
+    text("PlayTime: ", 10, 330);
+    textSize(32);    
 }   
 int oldx,oldy;
 float deltax,deltay;
@@ -20,55 +26,112 @@ int nextX = -1,nextY = -1,x,y;
 int animationstate = 0;
 boolean animationrunning = false;
 boolean iswin = false;
+int ptime = 0;
+int ptimec = 0;
 char point;
+
 void draw() {
-    if ( (mousePressed || animationrunning) && !iswin) {
-        moveBlock();
-    } else {
-        if (oldx != -1 && oldy != -1) {
-            oldx = -1;
-            oldy = -1;
-            if ( (abs(deltax) >= 50 || abs(deltay) >= 50) && (nextX != -1) ) {
-                Boardarray[nextY][nextX] = Boardarray[y][x];
-                Boardarray[y][x] = ' ';
-                SaveGame(gamefilename);
-            }
-            nextX = -1;
-            for (int y = 0;y < 3;y++) {
-                    for (int x = 0;x < 4;x++) {
-                        fill(255);
-                        rect(x*100, y*100, 100, 100);
-                        fill(60);
-                        text(Boardarray[y][x], (x*100)+40, (y*100)+60);
-                    }
+    ptime = (PlayTime + millis()) / 1000;
+    if (ptime != ptimec) {
+        ptimec = ptime;
+        drawStatus();
+    }
+    if (mouseY < 300) {
+        if ( (mousePressed || animationrunning) && !iswin) {
+            moveBlock();
+        } else {
+            if (oldx != -1 && oldy != -1) {
+                oldx = -1;
+                oldy = -1;
+                if ( (abs(deltax) >= 50 || abs(deltay) >= 50) && (nextX != -1) ) {
+                    Boardarray[nextY][nextX] = Boardarray[y][x];
+                    Boardarray[y][x] = 'N';
+                    MoveCount++;
+                    drawStatus();
+                    SaveGame(gamefilename);
                 }
-            if (checkwin()) {
-                fill(255,255,255,200);
-                rect(0, 0, 400, 300);
-                fill(0);
-                text("YOU WIN", 130, 150);
-                randommap();
-                SaveGame(gamefilename);
-                iswin = true;
-            } 
+                nextX = -1;
+                for (int y = 0;y < 3;y++) {
+                        for (int x = 0;x < 4;x++) {
+                            fill(255);
+                            rect(x*100, y*100, 100, 100);
+                            fill(60);
+                            if (Boardarray[y][x] == 'N')
+                            text(' ',(x*100)+40, (y*100)+60);
+                            else text(Boardarray[y][x], (x*100)+40, (y*100)+60);
+                        }
+                    }
+                if (checkwin()) {
+                    fill(255,255,255,200);
+                    rect(0, 0, 400, 300);
+                    fill(0);
+                    text("YOU WIN", 130, 150);
+                    randommap();
+                    SaveGame(gamefilename);
+                    iswin = true;
+                } 
+            }
         }
     }
 }
+void drawStatus() {
+    textSize(16);    
+        fill(255);
+        rect(0, 300, 400, 50);
+        fill(0);
+        text("PlayTime: " + ptime/60 + " Minute " + ptime%60 + " Second" + "  MoveCount: " + MoveCount, 10, 330);
+        textSize(32);    
+}
+void SaveGame(String filename) {
+    String data = "<ABCBlockMAP><information><GameVersion>" + gameversion + "</GameVersion><PlayTime>" + (PlayTime + millis()) +"</PlayTime><MoveCount>" + MoveCount + "</MoveCount></information><Map><Row1>" + Boardarray[0][0] + Boardarray[0][1] + Boardarray[0][2] + Boardarray[0][3] + "</Row1><Row2>" +  Boardarray[1][0] + Boardarray[1][1] + Boardarray[1][2] + Boardarray[1][3] + "</Row2><Row3>"+  Boardarray[2][0] + Boardarray[2][1] + Boardarray[2][2] + Boardarray[2][3] + "</Row3></Map></ABCBlockMAP>";
+    XML xml = parseXML(data);
+    saveXML(xml,filename);
+}
+void LoadGame(String filename) {
+    final XML xml = loadXML(filename);
+    XML information = xml.getChildren("information")[0];
+    XML Map = xml.getChildren("Map")[0];
+    String gameversion = information.getChildren("GameVersion")[0].getContent();
+    PlayTime = Integer.valueOf(information.getChildren("PlayTime")[0].getContent());
+    MoveCount = Integer.valueOf(information.getChildren("MoveCount")[0].getContent());
+    String[] row = {Map.getChildren("Row1")[0].getContent(),Map.getChildren("Row2")[0].getContent(),Map.getChildren("Row3")[0].getContent()};
+    for (int y = 0;y < 3;y++) {
+        for (int x = 0;x < 4;x++) {
+            Boardarray[y][x] = row[y].charAt(x);
+        }
+    }
+}
+
+
+/*
 void LoadGame(String filename) {
     //byte[] loadtxt = loadBytes(filename);
     int nextindex = 0;
     String strin[] = loadStrings(filename);
-    String br[] = strin[0].split(",");
     for (int y = 0;y < 3;y++) {
+        String br[] = strin[y].split(",");
         for (int x = 0;x < 4;x++) {
-            Boardarray[y][x] = br[nextindex].charAt(0);
+            Boardarray[y][x] = br[x].charAt(0);
             nextindex++;
         }
     }
-    println(br);
 }
 void SaveGame(String filename) {
-    byte[] saveline = new byte[24];
+    String sd[] = new String[3];
+    int nextindex = 0;
+    for (int y = 0;y < 3;y++) {
+        sd[y] = "";
+        for (int x = 0;x < 4;x++) {
+            sd[y] += Boardarray[y][x];
+            sd[y] += ',';
+        }
+    }
+    saveStrings(filename, sd);
+}
+*/
+/*
+void SaveGame(String filename) {
+    //byte[] saveline = new byte[24];
     int nextindex = 0;
     for (int y = 0;y < 3;y++) {
         for (int x = 0;x < 4;x++) {
@@ -80,6 +143,7 @@ void SaveGame(String filename) {
     }
     saveBytes(filename, saveline);
 }
+*/
 void moveBlock() {
        
     if (oldx == -1 && oldy == -1) {
@@ -143,7 +207,11 @@ void moveBlock() {
             }
             rect( moveX, moveY, 100, 100);
             fill(60);
-            text(Boardarray[y][x], (moveX)+40, (moveY)+60);
+            
+            if (Boardarray[y][x] == 'N')
+            text(" ", (moveX)+40, (moveY)+60);
+            else text(Boardarray[y][x], (moveX)+40, (moveY)+60);
+            
         } else {
             animationrunning = false;
             renderBlock(x,y);
@@ -192,7 +260,7 @@ void renderBlock(int x,int y) {
     text(Boardarray[y][x], (x*100)+40, (y*100)+60);
 }
 boolean checkwin() {
-    char BoardarrayWin[][] = { {'A','B','C','D'},{'E','F','G','H'},{'I','J','K',' '}};
+    char BoardarrayWin[][] = { {'A','B','C','D'},{'E','F','G','H'},{'I','J','K','N'}};
     for (int y =0;y < 3;y++) {
         for (int x =0;x < 4;x++) {
             if (Boardarray[y][x] != BoardarrayWin[y][x])return false;
@@ -210,19 +278,19 @@ float limitvalue(float x,int min,int max) {
 }
 char CheckAvilableMove(int x,int y) { 
     if(x-1 >= 0) {
-        if (Boardarray[y][x-1] == ' ')
+        if (Boardarray[y][x-1] == 'N')
         return 'L';
     }
     if(x+1 <= 3) {
-        if (Boardarray[y][x+1] == ' ')
+        if (Boardarray[y][x+1] == 'N')
         return 'R';
     }
     if(y-1 >= 0) {
-        if (Boardarray[y-1][x] == ' ')
+        if (Boardarray[y-1][x] == 'N')
         return 'U';
     }
     if(y+1 <= 2) {
-        if (Boardarray[y+1][x] == ' ')
+        if (Boardarray[y+1][x] == 'N')
         return 'D';
     }
     return '0';   
@@ -249,7 +317,7 @@ void randommap(){
             }
         }
     }
-    Boardarray[2][3] = ' ';
+    Boardarray[2][3] = 'N';
 }
 char[] removeArray(char[] inputarray,int indextoremove) {
     if (inputarray.length > 0) {
