@@ -69,7 +69,7 @@ void draw() {
                     randommap();
                     PlayTime = 0;
                     MoveCount = 0;
-                    SaveGame(gamefilename);
+                    SaveNewGame(gamefilename);
                     iswin = true;
                 } 
             }
@@ -86,6 +86,11 @@ void drawStatus() {
 }
 void SaveGame(String filename) {
     String data = "<ABCBlockMAP><information><GameVersion>" + gameversion + "</GameVersion><PlayTime>" + (PlayTime + millis()) +"</PlayTime><MoveCount>" + MoveCount + "</MoveCount></information><Map><Row1>" + Boardarray[0][0] + Boardarray[0][1] + Boardarray[0][2] + Boardarray[0][3] + "</Row1><Row2>" +  Boardarray[1][0] + Boardarray[1][1] + Boardarray[1][2] + Boardarray[1][3] + "</Row2><Row3>"+  Boardarray[2][0] + Boardarray[2][1] + Boardarray[2][2] + Boardarray[2][3] + "</Row3></Map></ABCBlockMAP>";
+    XML xml = parseXML(data);
+    saveXML(xml,filename);
+}
+void SaveNewGame(String filename) {
+    String data = "<ABCBlockMAP><information><GameVersion>" + gameversion + "</GameVersion><PlayTime>" + 0 +"</PlayTime><MoveCount>" + MoveCount + "</MoveCount></information><Map><Row1>" + Boardarray[0][0] + Boardarray[0][1] + Boardarray[0][2] + Boardarray[0][3] + "</Row1><Row2>" +  Boardarray[1][0] + Boardarray[1][1] + Boardarray[1][2] + Boardarray[1][3] + "</Row2><Row3>"+  Boardarray[2][0] + Boardarray[2][1] + Boardarray[2][2] + Boardarray[2][3] + "</Row3></Map></ABCBlockMAP>";
     XML xml = parseXML(data);
     saveXML(xml,filename);
 }
