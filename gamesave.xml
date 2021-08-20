@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ABCBlockMAP>
+  <information>
+    <GameVersion>3</GameVersion>
+    <PlayTime>35533</PlayTime>
+    <MoveCount>55</MoveCount>
+  </information>
+  <Map>
+    <Row1>ABCD</Row1>
+    <Row2>EFGK</Row2>
+    <Row3>HJNI</Row3>
+  </Map>
+</ABCBlockMAP>
