@@ -31,7 +31,7 @@ int ptimec = 0;
 char point;
 
 void draw() {
-    ptime = (PlayTime + millis()) / 1000;
+    if (!iswin){ptime = (PlayTime + millis()) / 1000;}
     if (ptime != ptimec) {
         ptimec = ptime;
         drawStatus();
@@ -67,6 +67,8 @@ void draw() {
                     fill(0);
                     text("YOU WIN", 130, 150);
                     randommap();
+                    PlayTime = 0;
+                    MoveCount = 0;
                     SaveGame(gamefilename);
                     iswin = true;
                 } 

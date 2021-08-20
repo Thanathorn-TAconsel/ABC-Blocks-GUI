@@ -2,12 +2,12 @@
 <ABCBlockMAP>
   <information>
     <GameVersion>3</GameVersion>
-    <PlayTime>35533</PlayTime>
-    <MoveCount>55</MoveCount>
+    <PlayTime>4363</PlayTime>
+    <MoveCount>0</MoveCount>
   </information>
   <Map>
-    <Row1>ABCD</Row1>
-    <Row2>EFGK</Row2>
-    <Row3>HJNI</Row3>
+    <Row1>BFAE</Row1>
+    <Row2>HGDI</Row2>
+    <Row3>CKJN</Row3>
   </Map>
 </ABCBlockMAP>
